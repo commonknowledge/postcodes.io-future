@@ -23,11 +23,7 @@ const defaultEnv = process.env.NODE_ENV || "development";
 export type Env = "development" | "test" | "production";
 
 interface PostgresConfig {
-  user: string;
-  password: string;
-  database: string;
-  host: string;
-  port: number;
+  connectionString: string;
   ssl?: any;
 }
 
@@ -53,11 +49,7 @@ const config: Record<Env, Config> = {
   development: {
     googleAnalyticsKey: "",
     postgres: {
-      user: "postcodesio",
-      password: "password",
-      database: "postcodesiodb", // Database name
-      host: "localhost",
-      port: 5432,
+      connectionString: process.env.POSTGRES_URL,
     },
     log: {
       name: "postcodes.io",
@@ -72,11 +64,8 @@ const config: Record<Env, Config> = {
   test: {
     googleAnalyticsKey: "",
     postgres: {
-      user: "postcodesio",
-      password: "password",
-      database: "postcodeio_testing",
-      host: "localhost",
-      port: 5432,
+      connectionString:
+        "postgres://postcodesio:password@localhost:5432/postcodeio_testing",
     },
     log: {
       name: "postcodes.io",
@@ -91,11 +80,7 @@ const config: Record<Env, Config> = {
   production: {
     googleAnalyticsKey: "",
     postgres: {
-      user: "postcodesio",
-      password: "password",
-      database: "postcodesiodb",
-      host: "localhost",
-      port: 5432,
+      connectionString: process.env.POSTGRES_URL,
       ssl: {
         rejectUnauthorized: false,
         sslMode: "require",
@@ -124,6 +109,7 @@ export const getConfig = (env?: Env): Config => {
     POSTGRES_DATABASE,
     POSTGRES_HOST,
     POSTGRES_PORT,
+    POSTGRES_URL,
     LOG_NAME,
     GA_KEY,
     LOG_DESTINATION,
@@ -135,15 +121,6 @@ export const getConfig = (env?: Env): Config => {
   } = process.env;
 
   if (PORT !== undefined) cfg.port = parseInt(PORT, 10);
-
-  if (POSTGRES_USER !== undefined) cfg.postgres.user = POSTGRES_USER;
-  if (POSTGRES_PASSWORD !== undefined)
-    cfg.postgres.password = POSTGRES_PASSWORD;
-  if (POSTGRES_DATABASE !== undefined)
-    cfg.postgres.database = POSTGRES_DATABASE;
-  if (POSTGRES_HOST !== undefined) cfg.postgres.host = POSTGRES_HOST;
-  if (POSTGRES_PORT !== undefined)
-    cfg.postgres.port = parseInt(POSTGRES_PORT, 10);
 
   if (LOG_NAME !== undefined) cfg.log.name = LOG_NAME;
   if (LOG_DESTINATION !== undefined) cfg.log.file = LOG_DESTINATION;
