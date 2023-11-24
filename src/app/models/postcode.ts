@@ -42,6 +42,7 @@ export interface PostcodeInterface {
   incode: string;
   outcode: string;
   parliamentary_constituency: string | null;
+  parliamentary_constituency_2025: string | null;
   admin_district: string | null;
   parish: string | null;
   admin_county: string | null;
@@ -56,6 +57,7 @@ export interface PostcodeInterface {
     admin_ward: string;
     parish: string;
     parliamentary_constituency: string;
+    parliamentary_constituency_2025: string;
     ccg: string;
     ccg_id: string;
     ced: string;
@@ -99,7 +101,9 @@ export interface PostcodeTuple {
   ced_id: string;
   ccg_id: string;
   constituency_id: string;
+  constituency_id_2025: string;
   parliamentary_constituency: string;
+  parliamentary_constituency_2025: string;
   admin_district: string;
   parish: string;
   admin_county: string;
@@ -140,6 +144,7 @@ const relation: Relation = {
     ccg_id: "VARCHAR(32)",
     ced_id: "VARCHAR(32)",
     constituency_id: "VARCHAR(32)",
+    constituency_id_2025: "VARCHAR(50)",
     date_of_introduction: "VARCHAR(6)",
     pfa_id: "VARCHAR(32)",
   },
@@ -206,6 +211,11 @@ const relationships: Relationship[] = [
     foreignKey: "code",
   },
   {
+    table: "constituencies_2025",
+    key: "constituency_id_2025",
+    foreignKey: "code",
+  },
+  {
     table: "nuts",
     key: "nuts_id",
     foreignKey: "code",
@@ -242,6 +252,10 @@ const foreignColumns: ForeignColumn[] = [
   {
     field: "constituencies.name",
     as: "parliamentary_constituency",
+  },
+  {
+    field: "constituencies_2025.name",
+    as: "parliamentary_constituency_2025",
   },
   {
     field: "districts.name",
@@ -717,6 +731,19 @@ attributesQuery.push(`
 	) as parliamentary_constituency
 `);
 
+attributesQuery.push(`
+	array(
+		SELECT
+			DISTINCT constituencies_2025.name
+		FROM
+			postcodes
+    LEFT OUTER JOIN
+      constituencies_2025 ON postcodes.constituency_id_2025 = constituencies_2025.code
+		WHERE
+			outcode=$1 AND constituencies_2025.name IS NOT NULL
+	) as parliamentary_constituency_2025
+`);
+
 const outcodeQuery = `
 	SELECT
 		outcode, avg(northings) as northings, avg(eastings) as eastings,
@@ -756,6 +783,7 @@ interface OutcodeTupleOutput {
   admin_ward: string[] | [null];
   country: string[] | [null];
   parliamentary_constituency: string[] | [null];
+  parliamentary_constituency_2025: string[] | [null];
 }
 
 const findOutcode = async (o: string): Promise<OutcodeInterface | null> => {
@@ -771,7 +799,9 @@ const findOutcode = async (o: string): Promise<OutcodeInterface | null> => {
   result.parish = toArray(result.parish);
   result.admin_ward = toArray(result.admin_ward);
   result.country = toArray(result.country);
-  result.parliamentary_constituency = toArray(result.parliamentary_constituency);
+  result.parliamentary_constituency = toArray(
+    result.parliamentary_constituency
+  );
   return result;
 };
 
@@ -795,6 +825,7 @@ const toJson = function (
     incode: p.incode,
     outcode: p.outcode,
     parliamentary_constituency: p.parliamentary_constituency,
+    parliamentary_constituency_2025: p.parliamentary_constituency_2025,
     admin_district: p.admin_district,
     parish: p.parish,
     admin_county: p.admin_county,
@@ -810,6 +841,7 @@ const toJson = function (
       admin_ward: p.admin_ward_id,
       parish: p.parish_id,
       parliamentary_constituency: p.constituency_id,
+      parliamentary_constituency_2025: p.constituency_id_2025,
       ccg: p.ccg_id,
       ccg_id: p.ccg_code,
       ced: p.ced_id,
@@ -883,8 +915,8 @@ const seedPostcodes = async (filepath: string) => {
     { column: "outcode", method: (row) => row.extract("pcds").split(" ")[0] },
     { column: "ced_id", method: (row) => row.extract("ced") },
     { column: "ccg_id", method: (row) => row.extract("ccg") },
-    { column: "date_of_introduction", method: row => row.extract("dointr") },
-    { column: "pfa_id", method: row => row.extract("pfa") },
+    { column: "date_of_introduction", method: (row) => row.extract("dointr") },
+    { column: "pfa_id", method: (row) => row.extract("pfa") },
   ]);
 
   await methods.csvSeed({

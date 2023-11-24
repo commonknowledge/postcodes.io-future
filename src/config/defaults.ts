@@ -100,6 +100,7 @@ export const defaults = {
     "longitude",
     "latitude",
     "parliamentary_constituency",
+    "parliamentary_constituency_2025",
     "european_electoral_region",
     "primary_care_trust",
     "region",

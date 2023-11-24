@@ -25,6 +25,7 @@ export interface OutcodeInterface {
   admin_ward: string[];
   country: string[];
   parliamentary_constituency: string[];
+  parliamentary_constituency_2025: string[];
 }
 
 const relation = {
@@ -43,6 +44,7 @@ const relation = {
     admin_ward: "VARCHAR(255)[]",
     country: "VARCHAR(255)[]",
     parliamentary_constituency: "VARCHAR(255)[]",
+    parliamentary_constituency_2025: "VARCHAR(255)[]",
   },
   indexes: [
     {
@@ -104,6 +106,7 @@ const toJson = (o: OutcodeTuple): OutcodeInterface => {
     admin_ward: o.admin_ward,
     country: o.country,
     parliamentary_constituency: o.parliamentary_constituency,
+    parliamentary_constituency_2025: o.parliamentary_constituency_2025,
   };
 };
 
