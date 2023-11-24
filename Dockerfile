@@ -8,6 +8,7 @@ COPY . .
 
 
 ARG NODE_ENV=development
+ENV NODE_ENV $NODE_ENV
 RUN npm ci && \
     npm cache clean --force && \
     npm run build
