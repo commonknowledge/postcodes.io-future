@@ -8,7 +8,7 @@ const pool = new pg.Pool({
 
 const updatePostcodes = async () => {
   const text =
-    "SELECT id, location FROM postcodes WHERE location IS NOT NULL order by id asc";
+    "SELECT id, location FROM postcodes WHERE location IS NOT NULL AND constituency_id_2025 IS NULL ORDER BY id ASC";
 
   try {
     const client = await pool.connect();
@@ -44,6 +44,25 @@ const updatePostcodes = async () => {
   }
 };
 
+const updateOutcodes = async () => {
+  try {
+    const outcodes = await pool.query("SELECT id, location from outcodes");
+
+    for (const outcode of outcodes.rows) {
+      const constituency = await pool.query(
+        "SELECT gss_code, name FROM parl_constituencies_2025 WHERE ST_Contains(geom, $1)",
+        [outcode?.location]
+      );
+      await pool.query(
+        "UPDATE outcodes SET parliamentary_constituency_2025 = $1 WHERE id = $2",
+        [constituency.rows[0]?.name, outcode?.id]
+      );
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const addConstituencies = async () => {
   const newConstituencies = await pool.query(
     "SELECT gss_code, name FROM parl_constituencies_2025"
@@ -51,11 +70,12 @@ const addConstituencies = async () => {
 
   for (const constituency of newConstituencies.rows) {
     pool.query(
-      "INSERT INTO constituencies (code, name) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+      "INSERT INTO constituencies_2025 (code, name) VALUES ($1, $2) ON CONFLICT DO NOTHING",
       [constituency.gss_code, constituency.name]
     );
   }
 };
 
+updateOutcodes();
 updatePostcodes();
 addConstituencies();
