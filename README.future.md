@@ -41,7 +41,7 @@ docker compose up -d
 #### Synchronise the fork
 
 - Use the Github dashboard to synchronise the fork with the main postcodes.io repository.
-- Merge this branch (`future-2025`) into `master`.
+- Merge the `master` branch back into this branch (`future-2025`).
 
 #### Reset the database
 
