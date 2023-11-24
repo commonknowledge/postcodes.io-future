@@ -104,12 +104,6 @@ export const getConfig = (env?: Env): Config => {
 
   const {
     PORT,
-    POSTGRES_USER,
-    POSTGRES_PASSWORD,
-    POSTGRES_DATABASE,
-    POSTGRES_HOST,
-    POSTGRES_PORT,
-    POSTGRES_URL,
     LOG_NAME,
     GA_KEY,
     LOG_DESTINATION,
