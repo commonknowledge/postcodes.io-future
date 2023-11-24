@@ -6,6 +6,8 @@ WORKDIR /app
 
 COPY . .
 
+
+ARG NODE_ENV=development
 RUN npm ci && \
     npm cache clean --force && \
     npm run build
