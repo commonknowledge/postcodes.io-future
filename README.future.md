@@ -16,7 +16,10 @@ Create a publicly accessible postgres database and copy the connection string to
 
 Restore the database from the dump file contained in `./latest_future`. Run the following:
 
-`
+```
+export $(cat .env.local | xargs)
+sh future/populate_database.sh
+```
 
 ### Generating a pg_dump file from scratch
 
@@ -24,8 +27,9 @@ Download the file from the link contained in `future/parl_constituencies_2025.ur
 Then run
 
 ```
-export $(cat .env | xargs)
+export $(cat .env.local | xargs)
 psql ${POSTGRES_URL} < future/future.columns
 sh future/import_new_constituency_shapes.sh
 node future/update_postcodes.js
+sh ./bin/dumpdb
 ```

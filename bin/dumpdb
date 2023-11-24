@@ -15,26 +15,14 @@ if ! [ -x "$(command -v gzip)" ]; then
   exit 1
 fi
 
-if [ -z "$POSTGRES_DB" ]; then
-  echo 'Database name must be specified.' >&2
-  echo 'e.g. POSTGRES_DB=postcodesiodb ./dumpdb.sh' >&2
-  exit 1
-fi
-
-if [ -z "$POSTGRES_HOST" ]; then
-  echo 'Database name must be specified.' >&2
-  echo 'e.g. POSTGRES_HOST=0.0.0.0 ./dumpdb.sh' >&2
-  exit 1
-fi
-
-if [ -z "$POSTGRES_USER" ]; then
-  echo 'Database name must be specified.' >&2
-  echo 'e.g. POSTGRES_USER=user ./dumpdb.sh' >&2
+if [ -z "$POSTGRES_URL" ]; then
+  echo 'Database must be specified.' >&2
+  echo 'e.g. POSTGRES_URL=postgres://u:p@locahost:5432/db ./dumpdb.sh' >&2
   exit 1
 fi
 
 TIMESTAMP=`date +%F-%H%M`
 
 # Create backup
-pg_dump --no-owner --format=plain --host=$POSTGRES_HOST --username=$POSTGRES_USER $POSTGRES_DB | gzip > postcodesio-$TIMESTAMP.sql.gz
+pg_dump --no-owner --format=plain $POSTGRES_URL | gzip > postcodesio-$TIMESTAMP.sql.gz
 
