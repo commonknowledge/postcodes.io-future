@@ -3,3 +3,9 @@ This repo exists to serve campaigners during the interim period between now and 
 The new constituency boundaries have been announced, but they won't come into effect until the new government is formed - the existing MPs sitting in their existing constituencies will serve their existing constituents until that time. 
 For electoral purposes though, the new constituency data is very much alive and essential for the work of campaigners.
 
+### Importing the new data
+Download the file from the link contained in `future/parl_constituencies_2025.url`.
+Then run 
+```
+sh future/import_new_constituency_shapes.sh
+```
