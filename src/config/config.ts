@@ -98,6 +98,7 @@ const config: Record<Env, Config> = {
       port: 5432,
       ssl: {
         rejectUnauthorized: false,
+        sslMode: "require",
       },
     },
     log: {
