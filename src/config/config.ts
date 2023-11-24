@@ -28,6 +28,7 @@ interface PostgresConfig {
   database: string;
   host: string;
   port: number;
+  ssl?: any;
 }
 
 interface LogConfig {
@@ -95,6 +96,9 @@ const config: Record<Env, Config> = {
       database: "postcodesiodb",
       host: "localhost",
       port: 5432,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     },
     log: {
       name: "postcodes.io",
@@ -153,8 +157,7 @@ export const getConfig = (env?: Env): Config => {
   if (SERVE_STATIC_ASSETS !== undefined)
     cfg.serveStaticAssets = SERVE_STATIC_ASSETS.toLowerCase() !== "false";
 
-  if (URL_PREFIX !== undefined)
-    cfg.urlPrefix = URL_PREFIX
+  if (URL_PREFIX !== undefined) cfg.urlPrefix = URL_PREFIX;
 
   try {
     if (HTTP_HEADERS !== undefined) cfg.httpHeaders = JSON.parse(HTTP_HEADERS);
